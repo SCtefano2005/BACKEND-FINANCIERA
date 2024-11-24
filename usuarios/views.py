@@ -4,11 +4,14 @@ from rest_framework.views import APIView
 from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
 from .models import Cliente, Proveedor, FacturaCliente, FacturaProveedor
 from .serializers import (
     ClienteSerializer, ProveedorSerializer, FacturaClienteSerializer, FacturaProveedorSerializer, CrearUsuarioSerializer, UsuarioReadSerializer
 )
 from .permissions import IsAdminOrContadorOrGerente
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 Usuario = get_user_model()
 
@@ -83,3 +86,18 @@ class ActualizarUsuarioView(APIView):
                 return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+def notificar_vencimiento_factura(request, factura_id):
+    factura = get_object_or_404(FacturaCliente, id=factura_id)
+    mensaje = f"La factura {factura.numero_factura} está próxima a vencer"
+
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        'notificaciones',
+        {
+            'type': 'enviar_notificacion',
+            'mensaje': mensaje
+        }
+    )
+
+    return JsonResponse({'status': 'notificado'})

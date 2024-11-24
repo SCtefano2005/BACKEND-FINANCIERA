@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'usuarios',
     'corsheaders',
+    'channels', 
+    
 ]
 
 MIDDLEWARE = [
@@ -75,9 +77,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'financiera.wsgi.application'
 
-
-
-
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -91,10 +90,13 @@ SIMPLE_JWT = {
 }
 
 
+ASGI_APPLICATION = 'financiera.asgi.application'
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}
 
 
 # Database
