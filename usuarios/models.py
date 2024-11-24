@@ -1,29 +1,50 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, Group, Permission
 
 
-class Usuario(AbstractUser):
+
+class Usuario(models.Model):
     ROLES = [
         ('ADMIN', 'Administrador'),
         ('CONTADOR', 'Contador'),
         ('GERENTE', 'Gerente'),
     ]
+    
+    email = models.EmailField(max_length=255, unique=True)
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=255)  # Aquí se almacenará la contraseña en texto plano o encriptada
     rol = models.CharField(max_length=10, choices=ROLES, default='CONTADOR')
-    groups = models.ManyToManyField(Group, related_name='usuario_groups', blank=True)
-    user_permissions = models.ManyToManyField(Permission, related_name='usuario_permissions', blank=True)
+    nombre_completo = models.CharField(max_length=255, blank=True, null=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    activo = models.BooleanField(default=True)  # Para desactivar un usuario sin borrarlo
+
+    def __str__(self):
+        return f"{self.username} ({self.rol})"
+    
+class AuditLog(models.Model):
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    accion = models.CharField(max_length=255)
+    fecha_hora = models.DateTimeField(auto_now_add=True)
+    descripcion = models.TextField()
+
+    def __str__(self):
+        return f"{self.usuario.username} - {self.accion} - {self.fecha_hora}"
 
 class Cliente(models.Model):
     nombre = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
-    dni = models.CharField(max_length=8,unique=True)
+    dni = models.CharField(max_length=8, unique=True, default='00000000')
+    ruc = models.CharField(max_length=11, unique=True, default='00000000000') 
     telefono = models.CharField(max_length=9, blank=True, null=True)
 
     def __str__(self):
         return self.nombre
 
+
 class Proveedor(models.Model):
     nombre = models.CharField(max_length=255)
     email = models.EmailField(unique=True)
+    dni = models.CharField(max_length=8, unique=True, default='00000000')
+    ruc = models.CharField(max_length=11, unique=True, default='00000000000')
     telefono = models.CharField(max_length=9, blank=True, null=True)
     direccion = models.TextField(blank=True, null=True)
 
