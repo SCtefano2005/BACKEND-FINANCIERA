@@ -1,24 +1,44 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser, Group, Permission
 
 
+from django.db import models
+from django.contrib.auth.models import AbstractUser, Group, Permission
 
-class Usuario(models.Model):
+class Usuario(AbstractUser):
     ROLES = [
         ('ADMIN', 'Administrador'),
         ('CONTADOR', 'Contador'),
         ('GERENTE', 'Gerente'),
     ]
-    
+
     email = models.EmailField(max_length=255, unique=True)
     username = models.CharField(max_length=150, unique=True)
-    password = models.CharField(max_length=255)  # Aquí se almacenará la contraseña en texto plano o encriptada
+    password = models.CharField(max_length=255)
     rol = models.CharField(max_length=10, choices=ROLES, default='CONTADOR')
     nombre_completo = models.CharField(max_length=255, blank=True, null=True)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    activo = models.BooleanField(default=True)  # Para desactivar un usuario sin borrarlo
+    activo = models.BooleanField(default=True)
+
+    # Agregar related_name para evitar conflictos
+    groups = models.ManyToManyField(
+        Group,
+        related_name="usuario_groups",
+        blank=True,
+        help_text="The groups this user belongs to.",
+        verbose_name="groups",
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name="usuario_user_permissions",
+        blank=True,
+        help_text="Specific permissions for this user.",
+        verbose_name="user permissions",
+    )
 
     def __str__(self):
         return f"{self.username} ({self.rol})"
+
     
 class AuditLog(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
@@ -51,6 +71,7 @@ class Proveedor(models.Model):
     def __str__(self):
         return self.nombre
 
+
 # Modelo de Factura Base
 class FacturaBase(models.Model):
     numero_factura = models.CharField(max_length=50, unique=True)
@@ -80,3 +101,4 @@ class FacturaProveedor(FacturaBase):
 
     def __str__(self):
         return f"Factura {self.numero_factura} - Proveedor: {self.proveedor.nombre}"
+
