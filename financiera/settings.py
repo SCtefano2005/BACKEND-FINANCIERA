@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,19 +22,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-zu*h6ki#$v!70$60zjn6_g75zbg#fz14!9=m(y7mj$e94$cg#x'
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-zu*h6ki#$v!70$60zjn6_g75zbg#fz14!9=m(y7mj$e94$cg#x")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in ("true", "1", "yes")
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
 
 # Application definition
 
 INSTALLED_APPS = [
-
-    'django.contrib.admin',
+    'django.contrib.admin',  # Puedes eliminar esta línea si no usas el administrador
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -42,11 +42,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'usuarios',
     'corsheaders',
-    'channels', 
+    'channels',
 ]
 
 MIDDLEWARE = [
-     'django.middleware.security.SecurityMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -61,7 +61,7 @@ ROOT_URLCONF = 'financiera.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],  # Asegúrate de tener esta carpeta para tus plantillas
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -75,46 +75,50 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'financiera.wsgi.application'
+ASGI_APPLICATION = 'financiera.asgi.application'
 
+# Django Rest Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }
 
+# SimpleJWT
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-
-ASGI_APPLICATION = 'financiera.asgi.application'
-
+# Channels y Redis
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],  # Cambia si Redis está en otro host o puerto
+        },
     },
 }
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'financiera',  # Nombre de la base de datos
-        'USER': 'postgres',  # Usuario de PostgreSQL
-        'PASSWORD': 'hola123',  # Contraseña del usuario
-        'HOST': 'localhost',  # Cambia si usas un host diferente
-        'PORT': '5432',       # Puerto de PostgreSQL
+        'NAME': os.getenv("POSTGRES_DB", "financiera"),  # Nombre de la base de datos
+        'USER': os.getenv("POSTGRES_USER", "postgres"),  # Usuario de PostgreSQL
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "hola123"),  # Contraseña del usuario
+        'HOST': os.getenv("POSTGRES_HOST", "localhost"),  # Host de la base de datos
+        'PORT': os.getenv("POSTGRES_PORT", "5432"),       # Puerto de PostgreSQL
     }
 }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -130,10 +134,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
-
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -142,17 +144,34 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Configuración CORS
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Permite el acceso desde el puerto donde se ejecuta React
+    "http://localhost:3000",  # React en desarrollo
     "http://127.0.0.1:3000",
 ]
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
+# Archivos estáticos
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+# Configuración de logs
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'errors.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    },
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
