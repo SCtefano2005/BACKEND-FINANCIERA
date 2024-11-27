@@ -17,7 +17,6 @@ class CrearUsuarioSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # Encriptar la contraseña antes de crear el usuario
-        validated_data['password'] = make_password(validated_data['password'])
         user = Usuario.objects.create(**validated_data)
         return user
 
