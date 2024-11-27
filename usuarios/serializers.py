@@ -1,6 +1,13 @@
 from rest_framework import serializers
 from django.contrib.auth.hashers import make_password
 from .models import Cliente, Proveedor, FacturaCliente, FacturaProveedor, Usuario
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data['rol'] = self.user.rol  # Agrega el rol del usuario al token
+        return data
 
 # Serializador para Crear Usuario
 class CrearUsuarioSerializer(serializers.ModelSerializer):
@@ -24,7 +31,7 @@ class UsuarioReadSerializer(serializers.ModelSerializer):
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cliente
-        fields = '_all_'
+        fields = '__all__'
 
     def validate_dni(self, value):
         # Validar que el DNI tenga exactamente 8 caracteres numéricos
@@ -36,7 +43,7 @@ class ClienteSerializer(serializers.ModelSerializer):
 class ProveedorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Proveedor
-        fields = '_all_'
+        fields = '__all__'
 
     def validate_ruc(self, value):
         # Validar que el RUC tenga exactamente 11 caracteres numéricos
@@ -50,7 +57,7 @@ class FacturaClienteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FacturaCliente
-        fields = '_all_'
+        fields = '__all__'
 
     def validate_monto_total(self, value):
         # Validar que el monto total sea positivo
@@ -64,8 +71,8 @@ class FacturaProveedorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FacturaProveedor
-        fields = '_all_'
-
+        fields = '__all__'
+        
     def validate_monto_total(self, value):
         # Validar que el monto total sea positivo
         if value <= 0:

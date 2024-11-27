@@ -97,6 +97,9 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+AUTH_USER_MODEL = 'usuarios.Usuario'
+
+
 # Channels y Redis
 CHANNEL_LAYERS = {
     "default": {
@@ -115,9 +118,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv("POSTGRES_DB", "financiera"),  
         'USER': os.getenv("POSTGRES_USER", "postgres"),  
-        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "hola123"),  
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "1234"),  
         'HOST': os.getenv("POSTGRES_HOST", "localhost"), 
-        'PORT': os.getenv("POSTGRES_PORT", "5432"),       
+        'PORT': os.getenv("POSTGRES_PORT", "5432"),
+        'OPTIONS': {
+            'client_encoding': 'UTF8',
+        },       
     }
 }
 

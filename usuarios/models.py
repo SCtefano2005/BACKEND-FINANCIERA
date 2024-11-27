@@ -1,9 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, Permission
+from django.contrib.auth.hashers import make_password
 
-
-from django.db import models
-from django.contrib.auth.models import AbstractUser, Group, Permission
 
 class Usuario(AbstractUser):
     ROLES = [
@@ -20,7 +18,6 @@ class Usuario(AbstractUser):
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     activo = models.BooleanField(default=True)
 
-    # Agregar related_name para evitar conflictos
     groups = models.ManyToManyField(
         Group,
         related_name="usuario_groups",
@@ -35,6 +32,12 @@ class Usuario(AbstractUser):
         help_text="Specific permissions for this user.",
         verbose_name="user permissions",
     )
+
+    def save(self, *args, **kwargs):
+        # Si la contraseña no está encriptada, encripta antes de guardar
+        if not self.password.startswith('pbkdf2_'):
+            self.password = make_password(self.password)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.username} ({self.rol})"

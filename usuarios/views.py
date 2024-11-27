@@ -5,7 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse
 from .models import Cliente, Proveedor, FacturaCliente, FacturaProveedor
 from .serializers import (
-    ClienteSerializer, ProveedorSerializer, FacturaClienteSerializer, FacturaProveedorSerializer, UsuarioReadSerializer
+    ClienteSerializer, ProveedorSerializer, FacturaClienteSerializer, FacturaProveedorSerializer, UsuarioReadSerializer, CustomTokenObtainPairSerializer
 )
 from django.template.loader import render_to_string
 from xhtml2pdf import pisa  # Cambiado para generación de PDF
@@ -14,10 +14,13 @@ from openpyxl.styles import Font, Alignment
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from django.contrib.auth import get_user_model
+from rest_framework_simplejwt.views import TokenObtainPairView
 
 Usuario = get_user_model()
 
-
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+    
 class UsuarioViewSet(viewsets.ModelViewSet):
     queryset = Usuario.objects.all()
     serializer_class = UsuarioReadSerializer
