@@ -22,12 +22,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-zu*h6ki#$v!70$60zjn6_g75zbg#fz14!9=m(y7mj$e94$cg#x")
+SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in ("true", "1", "yes")
 
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition
@@ -106,14 +107,15 @@ CHANNEL_LAYERS = {
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("POSTGRES_DB", "financiera"),  # Nombre de la base de datos
-        'USER': os.getenv("POSTGRES_USER", "postgres"),  # Usuario de PostgreSQL
-        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "hola123"),  # Contraseña del usuario
-        'HOST': os.getenv("POSTGRES_HOST", "localhost"),  # Host de la base de datos
-        'PORT': os.getenv("POSTGRES_PORT", "5432"),       # Puerto de PostgreSQL
+        'NAME': os.getenv("POSTGRES_DB", "financiera"),  
+        'USER': os.getenv("POSTGRES_USER", "postgres"),  
+        'PASSWORD': os.getenv("POSTGRES_PASSWORD", "hola123"),  
+        'HOST': os.getenv("POSTGRES_HOST", "localhost"), 
+        'PORT': os.getenv("POSTGRES_PORT", "5432"),       
     }
 }
 
@@ -152,7 +154,7 @@ CORS_ALLOWED_ORIGINS = [
 
 # Archivos estáticos
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Configuración de logs
 LOGGING = {
