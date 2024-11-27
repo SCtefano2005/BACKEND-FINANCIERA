@@ -34,7 +34,6 @@ class Usuario(AbstractUser):
     )
 
     def save(self, *args, **kwargs):
-        # Si la contraseña no está encriptada, encripta antes de guardar
         if not self.password.startswith('pbkdf2_'):
             self.password = make_password(self.password)
         super().save(*args, **kwargs)
@@ -91,14 +90,12 @@ class FacturaBase(models.Model):
     class Meta:
         abstract = True
 
-# Modelo de Factura de Cliente (Cuentas por Cobrar)
 class FacturaCliente(FacturaBase):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='facturas')
 
     def __str__(self):
         return f"Factura {self.numero_factura} - Cliente: {self.cliente.nombre}"
 
-# Modelo de Factura de Proveedor (Cuentas por Pagar)
 class FacturaProveedor(FacturaBase):
     proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE, related_name='facturas')
 

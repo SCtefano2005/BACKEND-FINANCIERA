@@ -6,7 +6,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)
-        data['rol'] = self.user.rol  # Agrega el rol del usuario al token
+        data['rol'] = self.user.rol 
         return data
 
 # Serializador para Crear Usuario
@@ -16,11 +16,10 @@ class CrearUsuarioSerializer(serializers.ModelSerializer):
         fields = ['username', 'password', 'email', 'rol']
 
     def create(self, validated_data):
-        # Encriptar la contraseña antes de crear el usuario
         user = Usuario.objects.create(**validated_data)
         return user
 
-# Serializador para Visualizar Usuario (sin contraseña)
+# Serializador para Visualizar Usuario 
 class UsuarioReadSerializer(serializers.ModelSerializer):
     class Meta:
         model = Usuario

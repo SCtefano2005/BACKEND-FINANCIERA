@@ -13,7 +13,7 @@ router.register(r'facturas-clientes', FacturaClienteViewSet, basename='factura-c
 router.register(r'facturas-proveedores', FacturaProveedorViewSet, basename='factura-proveedor')
 
 urlpatterns = [
-    path('', include(router.urls)),  # Todas las rutas del router
+    path('', include(router.urls)),  
     path('facturas-clientes/<int:factura_id>/pdf/', FacturaPDFView.as_view(), name='factura_pdf'),
     path('facturas/excel/', GenerarExcelFacturasView.as_view(), name='generar_excel_facturas'),
 ]

@@ -5,11 +5,9 @@ class IsAdminOrContadorOrGerente(BasePermission):
     Permiso personalizado para permitir acceso a administradores, contadores, y gerentes con diferentes niveles de acceso.
     """
     def has_permission(self, request, view):
-        # Verifica si el usuario está autenticado
         if not request.user.is_authenticated:
             return False
 
-        # Permisos para Administrador (puede realizar cualquier acción)
         if request.user.rol == 'ADMIN':
             return True
         
