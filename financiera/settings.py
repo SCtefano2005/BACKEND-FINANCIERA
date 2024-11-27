@@ -27,7 +27,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://backend-financiera.onrender.com/', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['backend-financiera.onrender.com', '127.0.0.1', 'localhost']
+
 
 
 
