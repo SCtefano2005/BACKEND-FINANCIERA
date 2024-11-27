@@ -25,9 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DJANGO_DEBUG", "True").lower() in ("true", "1", "yes")
+DEBUG = True
 
-ALLOWED_HOSTS = ['backend-financiera.onrender.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['https://backend-financiera.onrender.com/', '127.0.0.1', 'localhost']
+
 
 
 
@@ -153,8 +154,8 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 # Archivos estáticos
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'  
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Configuración de logs
 LOGGING = {

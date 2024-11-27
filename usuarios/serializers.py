@@ -24,7 +24,7 @@ class UsuarioReadSerializer(serializers.ModelSerializer):
 class ClienteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cliente
-        fields = '__all__'
+        fields = '_all_'
 
     def validate_dni(self, value):
         # Validar que el DNI tenga exactamente 8 caracteres numéricos
@@ -36,7 +36,7 @@ class ClienteSerializer(serializers.ModelSerializer):
 class ProveedorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Proveedor
-        fields = '__all__'
+        fields = '_all_'
 
     def validate_ruc(self, value):
         # Validar que el RUC tenga exactamente 11 caracteres numéricos
@@ -50,7 +50,7 @@ class FacturaClienteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FacturaCliente
-        fields = '__all__'
+        fields = '_all_'
 
     def validate_monto_total(self, value):
         # Validar que el monto total sea positivo
@@ -64,7 +64,7 @@ class FacturaProveedorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FacturaProveedor
-        fields = '__all__'
+        fields = '_all_'
 
     def validate_monto_total(self, value):
         # Validar que el monto total sea positivo
